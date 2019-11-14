@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block app_content %}
+<style>
+.firma-ara{
+    padding-bottom: 100px;
+    padding-top: 100px;
+
+}
+.form-arka-plan{
+        background-image: url("static/cmulogo.png");
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+}
+.acik-renk-form{
+    background: rgba(255, 255, 255, 0.58);
+}
+.siyah-cerceve{
+    -webkit-text-fill-color: white;
+    -webkit-text-stroke-width: 2px;
+    -webkit-text-stroke-color: black;
+}
+</style>
+
+<section class="search-banner text-white py-3 form-arka-plan" id="search-banner">
+<!--    <img src="{{ url_for("static",filename="scottylogo.jpg") }}">-->
+
+    <br><br>
+    <h1 class="text-center" style="font-size: 3em;">Carnegie Calendar</h1>
+
+    <div class="container py-5 my-5">
+        <div class="row text-center pb-4">
+            <div class="col-md-12">
+                <h1 style="font-size: 3em;" class="text-white siyah-cerceve">Your one-stop shop for everything happening at CMU</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card acik-renk-form">
+                    <div class="card-body">
+
+                        <div class="row">
+                            <div class="col-md-10 mx-auto" style="text-align: center;">
+                                <form class="form-group" method="post" autocomplete="off" action="/">
+                                    <input type="text" name="search" class="form-control" placeholder="What kind of events are you looking for?">
+                                    <br>
+                                    <button type="button; submit" method = "post" class="btn btn-warning  pl-5 pr-5">Search</button>
+<!--                                    <button type="button; submit" method = "post" class="btn btn-warning  pl-5 pr-5">Search</button>-->
+                                </form>
+                                <a href="path_to_file" download="current.ics">
+                                <button type="button; submit" method = "post" class="btn btn-warning  pl-5 pr-5">Export</button>
+                                    </a>
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+ <h1 class="text-center"> {{ header }} </h1>
+
+<div class="container-fluid">
+
+        {% for event in events %}
+<div class="row" style="justify-content-cent;">
+        <div class="card mx-auto" style="color:black; width:90vw" >
+            <div class="card-header"><h1>Event: {{ event[0] }}</h1> <br>
+            Location: {{ event[2] }}<br>
+            Time: {{ dateconvert(event[3].dt) }}</div>
+  <div class="card-body">Description: {{ event[1] }}</div>
+<!--  <div class="card-footer">Footer</div>-->
+</div>
+
+    </div>
+    <br>
+    {% endfor %}
+
+</div>
+
+
+{% endblock %}
