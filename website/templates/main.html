@@ -43,13 +43,14 @@
                         <div class="row">
                             <div class="col-md-10 mx-auto" style="text-align: center;">
                                 <form class="form-group" method="post" autocomplete="off" action="/">
-                                    <input type="text" name="search" class="form-control" placeholder="What kind of events are you looking for?">
+<!--                                    <input type="text" name="search" class="form-control" placeholder="What kind of events are you looking for?">-->
+                                    <input type="text" name="search" class="form-control" placeholder="Search for multiple keywords with commas: 'resume, tech talk, thesis defense' ">
                                     <br>
                                     <button type="button; submit" method = "post" class="btn btn-warning  pl-5 pr-5">Search</button>
 <!--                                    <button type="button; submit" method = "post" class="btn btn-warning  pl-5 pr-5">Search</button>-->
                                 </form>
-                                <a href="path_to_file" download="current.ics">
-                                <button type="button; submit" method = "post" class="btn btn-warning  pl-5 pr-5">Export</button>
+                                <a href="/exportcalendar" target="blank">
+                                <button type="button" method="post" class="btn btn-warning  pl-5 pr-5">Export</button>
                                     </a>
 
                             </div>
@@ -64,6 +65,9 @@
 
  <h1 class="text-center"> {{ header }} </h1>
 
+<!--<iframe src='http://cdn.instantcal.com/cvir.html?file=generatedcals/everything.ics' scrolling='no' frameborder=0 height=600 width=600></iframe>-->
+<!--Would like to add a calendar view... The above doesn't work until I'm actually hosting-->
+
 <div class="container-fluid">
 
         {% for event in events %}
@@ -73,7 +77,6 @@
             Location: {{ event[2] }}<br>
             Time: {{ dateconvert(event[3].dt) }}</div>
   <div class="card-body">Description: {{ event[1] }}</div>
-<!--  <div class="card-footer">Footer</div>-->
 </div>
 
     </div>

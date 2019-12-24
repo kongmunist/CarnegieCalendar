@@ -1,0 +1,152 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:Carnegie Calendar
+BEGIN:VEVENT
+SUMMARY:SCS/ECE New York City Mixer
+DTSTART;TZID=America/New_York:20200129T180000
+DTEND;TZID=America/New_York:20200129T180000
+DTSTAMP:20191224T053818Z
+UID:calendar.643917.field_event_date2.0@www.cs.cmu.edu
+CREATED:20191220T175331Z
+DESCRIPTION:Jan\n29\n2020\n6PM      \n              \n          SCS/ECE Ne
+ w York City Mixer        \n                \n\n                \n\nEvent I
+ nformation: \n\nWednesday\, January 29\, 2020 - 6:00pm\n\n\nThe Skylark\n
+ \nAbstract: \n\n\n\nLet's Catch Up!\n\n\n\nJoin fellow SCS and ECE alumni
+  at the Skylark in Midtown Manhattan on Wednesday\, January 29. We'll have
+  food\, drinks\, and special guests! You won't want to miss it.\n\n\n\nSpe
+ cial Guests\n\n\n	Mark Stehlik\, Assistant Dean for Outreach and Teaching 
+ Professor\, School of Computer Science\n	Shawn Blanton\, Associate Departm
+ ent Head for Research and Trustee Professor\,  Department of Electrical a
+ nd Computer Engineerin\n\n\n\n\nRSVP\n\n\nhttps://nycscsecealumnimixer2020
+ .splashthat.com/\n\nFor More Information\, Please Contact: \n\n\n\nInquir
+ ies?
+LAST-MODIFIED:20191220T180206Z
+LOCATION:The Skylark
+URL;TYPE=URI:https://www.cs.cmu.edu/calendar/wed-2020-01-29-1800/scsece-ne
+ w-york-city-mixer
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Martin Luther King\, Jr. Day Writing Awards Celebration
+DTSTART:20200120T213000Z
+DTEND:20200121T010000Z
+DTSTAMP:20191224T053828Z
+UID:7hi1dqencner7pldols4u76tse@google.com
+SEQUENCE:0
+CREATED:20191204T213344Z
+DESCRIPTION:Carnegie Mellon University's Martin Luther King\, Jr. Day Writ
+ ing Awards gives high school and college students in western Pennsylvania 
+ a safe space to creatively explore their personal experiences with differe
+ nce and discrimination through writing. The student winners will read thei
+ r prose and poetry pieces and receive recognition at the awards celebratio
+ n. The event will also feature performances by CMU's School of Drama choir
+ . All are welcome to this free event. Food will be served. Reception begin
+ s at 4:30 p.m. Program begins at 5 p.m.
+LAST-MODIFIED:20191204T213415Z
+LOCATION:Rangos Ballroom
+STATUS:CONFIRMED
+TRANSP:OPAQUE
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Food and Everyday Life in Pittsburgh
+DTSTART:20200318T203000Z
+DTEND:20200318T223000Z
+DTSTAMP:20191224T053828Z
+UID:6iks3e5in3g2e9plj7d8p8bbft@google.com
+SEQUENCE:0
+CREATED:20190820T152438Z
+DESCRIPTION:Stephanie Boddie\, "Food and Everyday Life in Pittsburgh and C
+ uba"\n\nPart of the 2019-20 Humanities Center Public Lecture Series: Bread
+  and Water: Access\, Belonging\, and Environmental Justice in the City.
+LAST-MODIFIED:20190820T152438Z
+LOCATION:
+STATUS:CONFIRMED
+TRANSP:OPAQUE
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:A Community Study of a Food Oasis in the East End of Pittsburgh
+DTSTART:20200129T213000Z
+DTEND:20200129T223000Z
+DTSTAMP:20191224T053828Z
+UID:1vp6mp28pu6rnh0kjdlk075pg9@google.com
+SEQUENCE:0
+CREATED:20190820T152257Z
+DESCRIPTION:Waverly Duck\, author of <i>A Community Study of a Food Oasis 
+ in the East End of Pittsburgh</i>.<br><br>Part of the 2019-20 Humanities C
+ enter Public Lecture Series: Bread and Water: Access\, Belonging\, and Env
+ ironmental Justice in the City.
+LAST-MODIFIED:20190820T152257Z
+LOCATION:
+STATUS:CONFIRMED
+TRANSP:OPAQUE
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Annual celebration of the Martin Luther King\, Jr. Day Writing Awa
+ rds
+DTSTART;VALUE=DATE:20200120
+DTEND;VALUE=DATE:20200121
+DTSTAMP:20191217T194218Z
+UID:TKF/5be9bf8fdf82fe0e3f77f032/177/26324940/0/0
+CATEGORIES:Diversity-&-Inclusion,University-Calendar
+CLASS:PUBLIC
+CREATED:20191217T194218Z
+DESCRIPTION:Martin Luther King\, Jr. Day Writing Awards Celebration\n\nMon
+ day\, January 20\, 2020\, Reception at 4:30 p.m. and program begins 5 p.m.
+ \, \nRangos Ballroom\, Cohon University Center\n\nCarnegie Mellon Universi
+ ty’s Martin Luther King\, Jr. Day Writing Awards \ngives high school and
+  college students in western Pennsylvania a safe space \nto creatively exp
+ lore their personal experiences with difference and \ndiscrimination throu
+ gh writing. The event will feature readings by the \nstudent winners and p
+ erformances by CMU’s School of Drama choir. All are \nwelcome to this fr
+ ee event. Food will be served.\nhttps://www.cmu.edu/dietrich/english/mlk/
+LAST-MODIFIED:20191217T194218Z
+LOCATION:Cohon University Center\; Rangos Ballroom\,5032 Forbes Ave\, Pitt
+ sburgh\, PA 15213\, USA
+TRANSP:OPAQUE
+URL:https://tockify.com/carnegie.mellon.student.affairs/detail/177/1579496
+ 400000
+X-TKF-FEATURED-IMAGE:https://d3flpus5evl89n.cloudfront.net/5be9bf76df82fe0
+ e3f77ef62/5cadf5f1df82fe7e284e0491/scaled_768.png
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Sustainable Table
+DTSTART:20200128T160000Z
+DTEND:20200128T180000Z
+DTSTAMP:20191223T192154Z
+UID:TKF/5be9bf8fdf82fe0e3f77f032/481/26337120/0/0
+CATEGORIES:Food-&-Dining,University-Calendar
+CLASS:PUBLIC
+CREATED:20191223T192154Z
+DESCRIPTION:This month's Sustainable Table theme is "Carbon Food Print" wh
+ ere we'll \ndiscuss the carbon footprint of the food you eat. Meet with Ch
+ artwells \nSustainability Coordinator for an interactive discussion of the
+  food we eat \nand it's environmental impact.
+LAST-MODIFIED:20191223T192154Z
+LOCATION:Kirr Commons
+TRANSP:OPAQUE
+URL:https://tockify.com/carnegie.mellon.student.affairs/detail/481/1580227
+ 200000
+X-TKF-FEATURED-IMAGE:https://d3flpus5evl89n.cloudfront.net/5be9bf76df82fe0
+ e3f77ef62/5c548710df82fe38f30d4d5a/scaled_768.png
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Chef's Table 2020 Food Trends + FYUL
+DTSTART:20200129T220000Z
+DTEND:20200130T020000Z
+DTSTAMP:20191223T193930Z
+UID:TKF/5be9bf8fdf82fe0e3f77f032/482/26338920/0/0
+CATEGORIES:Food-&-Dining,University-Calendar
+CLASS:PUBLIC
+CREATED:20191223T193930Z
+DESCRIPTION:Enjoy a Chef's Table dinner service in Schatz Dining Room as o
+ ur culinary \nteam prepare dishes for on-trend foods in 2020! Also feature
+ d will be a \n"Recovery" themed FYUL (Fuel for Life on Campus) Station whi
+ ch focuses on \nfoods with wellness and health benefits.
+LAST-MODIFIED:20191223T193930Z
+LOCATION:Schatz Dining Room
+TRANSP:OPAQUE
+URL:https://tockify.com/carnegie.mellon.student.affairs/detail/482/1580335
+ 200000
+X-TKF-FEATURED-IMAGE:https://d3flpus5evl89n.cloudfront.net/5be9bf76df82fe0
+ e3f77ef62/5c548710df82fe38f30d4d5a/scaled_768.png
+END:VEVENT
+END:VCALENDAR
