@@ -122,7 +122,8 @@ def combineEvents(urlList):
         try:
             eventsList.extend(eventmineURL(url))
             succ += 1
-        except:
+        except Exception as e:
+            print(str(e))
             print("combine failed on " + url)
 
     return filterByDate(eventsList,datetime.datetime.now()), succ

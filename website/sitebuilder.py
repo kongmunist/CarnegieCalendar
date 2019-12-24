@@ -1,7 +1,6 @@
 from flask import Flask, render_template, url_for, render_template_string, Markup, redirect, request, send_file, session
 from flask_flatpages import FlatPages, pygmented_markdown
 from flask_bootstrap import Bootstrap
-from flask_frozen import Freezer
 
 import re
 import sys
@@ -14,7 +13,6 @@ app.config.from_object(__name__)
 app.secret_key = os.urandom(16)
 
 pages = FlatPages(app)
-freezer = Freezer(app)
 
 DEBUG = True
 FLATPAGES_AUTO_RELOAD = DEBUG
@@ -116,6 +114,31 @@ def index():
             filename = "".join(searchterm)
         makeICS(newCal, filename)
         session['search'] = filename
+    else:
+        # Import big calendar with all events
+        g = open("../calendars/current.ics", 'rb')
+        cal = Calendar.from_ical(g.read())
+        newCal = cal.walk()[1:]
+
+        # Generate an eventList for the main.html template to fill in
+        eventList = [
+            [thing.get('SUMMARY'), remove_tags(thing.get('DESCRIPTION')),
+             thing.get('LOCATION'),
+             thing.get('DTSTART'), thing.get('DTEND'), thing.get('URL')] for
+            thing in newCal if len(thing.get("DESCRIPTION").strip()) >= 1]
+
+        # Sort eventList by date so it displays properly
+        try:
+            eventList = [x for x in sorted(eventList,
+                                           key=lambda event: time.mktime(
+                                               event[3].dt.timetuple()))]
+        except:
+            print("sort by date failed")
+
+        # Generate search header
+        header = str(len(eventList)) + " events happening soon..."
+        session['search'] = "everything"
+
 
     return render_template('main.html', events = eventList, header = header)
 
@@ -169,8 +192,4 @@ def add_header(response):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) > 1 and sys.argv[1] == "build":
-        # Builds the website into a static site and runs "firebase deploy" to update the site
-        freezer.freeze()
-    else:
-        app.run(port=8000)
+    app.run(port=8000)
