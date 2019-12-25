@@ -1,6 +1,5 @@
 from flask import Flask, render_template, url_for, render_template_string, Markup, redirect, request, send_file, session
-from flask_flatpages import FlatPages, pygmented_markdown
-from flask_bootstrap import Bootstrap
+
 
 import re
 import sys
@@ -11,8 +10,6 @@ from icalendar import *
 app = Flask(__name__)
 app.config.from_object(__name__)
 app.secret_key = os.urandom(16)
-
-pages = FlatPages(app)
 
 DEBUG = True
 FLATPAGES_AUTO_RELOAD = DEBUG
@@ -58,6 +55,16 @@ def index():
     eventList = []
     header = ""
 
+    g = open("../calendars/current.ics", 'rb')
+    cal = Calendar.from_ical(g.read())
+    cal = cal.walk()[1:]
+
+    if len(cal) < 5:
+        g = open("../calendars/currentBackup.ics", 'rb')
+        cal = Calendar.from_ical(g.read())
+        cal = cal.walk()[1:]
+
+
     # When user submits the form with a search,
     if request.method == 'POST':
         # Tell us what they searched for and Record search terms
@@ -71,24 +78,19 @@ def index():
             open("data/searchhistory.txt", 'a+').write(orig_search_form + ", ")
             print("search for", orig_search_form)
 
-
-
-
         # Make list out of search terms
-        searchterm = [x.strip() for x in orig_search_form.split(",")]
-
-        # Import big calendar with all events
-        g = open("../calendars/current.ics", 'rb')
-        cal = Calendar.from_ical(g.read())
-        cal = cal.walk()[1:]
+        searchterm = [x.strip().lower() for x in orig_search_form.split(",")]
+        print(searchterm)
 
         # Filter for separate search terms
         newCal = []
+        uniques = set()
         for t in cal:
             for term in searchterm:
-                if term.lower() in t.get("SUMMARY").lower() or term.lower() in t.get(
-                    "DESCRIPTION").lower():
+                if t.get("SUMMARY") not in uniques and (term.lower() in t.get("SUMMARY").lower() or term.lower() in t.get(
+                    "DESCRIPTION").lower()):
                     newCal.append(t)
+                    uniques.add(t.get("SUMMARY"))
 
         # Generate an eventList for the main.html template to fill in
         eventList = [
@@ -114,11 +116,14 @@ def index():
             filename = "".join(searchterm)
         makeICS(newCal, filename)
         session['search'] = filename
+
     else:
-        # Import big calendar with all events
-        g = open("../calendars/current.ics", 'rb')
-        cal = Calendar.from_ical(g.read())
-        newCal = cal.walk()[1:]
+        newCal = []
+        uniques = set()
+        for t in cal:
+            if t.get("SUMMARY") not in uniques:
+                uniques.add(t.get("SUMMARY"))
+                newCal.append(t)
 
         # Generate an eventList for the main.html template to fill in
         eventList = [
