@@ -133,6 +133,7 @@ def filterByDate(eventList,mindate):
     datenow = datetimenow.date()
     filtered = []
     for event in eventList:
+
         try:
             if event.get('dtstart').dt > datetimenow:
                 filtered.append(event)
@@ -188,10 +189,11 @@ print("combining")
 combined = eventList + forbiddenList + clubList + labsList
 
 print("filtering")
-current = filterByDate(combined, datetime.datetime.now())
+current = filterByDate(combined, datetime.datetime.now()-datetime.timedelta(days=1)) # Take only events that are after yesterday, to get the most recent ones
 
 
 print(len(current), "current events")
+
 # clubsList = combineEvents(clubs)
 # current = filterByDate(clubsList, datetime.datetime.now())
 

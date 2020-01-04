@@ -11,7 +11,7 @@ app = Flask(__name__)
 app.config.from_object(__name__)
 app.secret_key = os.urandom(16)
 
-DEBUG = True
+DEBUG = False
 FLATPAGES_AUTO_RELOAD = DEBUG
 # export FLASK_ENV=development
 
@@ -34,7 +34,6 @@ def makeICS(eventList, name):
     calendar.add('version', '2.0')
 
     f = open("generatedcals/" + name + ".ics",'wb+')
-    # print(calendar)
 
     f.write(calendar.to_ical())
     f.close()
@@ -71,11 +70,11 @@ def index():
         orig_search_form = request.form['search']
         if orig_search_form.strip() == "":
             Everything = True
-            open("data/searchhistory.txt", 'a+').write("everything, ")
+            open("data/searchhistory.txt", 'a+').write("everything\n")
             print("search for everything")
         else:
             Everything = False
-            open("data/searchhistory.txt", 'a+').write(orig_search_form + ", ")
+            open("data/searchhistory.txt", 'a+').write(orig_search_form + "\n")
             print("search for", orig_search_form)
 
         # Make list out of search terms
@@ -101,10 +100,14 @@ def index():
 
         # Sort eventList by date so it displays properly
         try:
+            curTime = time.mktime(time.localtime()) - 43200
             eventList = [x for x in sorted(eventList,
-                             key=lambda event: time.mktime(event[3].dt.timetuple()))]
+                                           key=lambda event: time.mktime(
+                                               event[3].dt.timetuple())) if
+                         time.mktime(
+                             x[3].dt.timetuple()) > curTime]
         except:
-            print("sort by date failed")
+            print("sort by date failed", time.localtime())
 
         # Generate search header
         header = str(len(eventList)) + " events containing \'" + orig_search_form + "\'"
@@ -114,7 +117,7 @@ def index():
             filename = "everything"
         else:
             filename = "".join(searchterm)
-        makeICS(newCal, filename)
+
         session['search'] = filename
 
     else:
@@ -134,11 +137,13 @@ def index():
 
         # Sort eventList by date so it displays properly
         try:
+            curTime = time.mktime(time.localtime())-43200
             eventList = [x for x in sorted(eventList,
                                            key=lambda event: time.mktime(
-                                               event[3].dt.timetuple()))]
+                                               event[3].dt.timetuple())) if time.mktime(
+                                               x[3].dt.timetuple()) > curTime]
         except:
-            print("sort by date failed")
+            print("sort by date failed", time.localtime())
 
         # Generate search header
         header = str(len(eventList)) + " events happening soon..."
@@ -148,9 +153,32 @@ def index():
     return render_template('main.html', events = eventList, header = header)
 
 
+# Track referral nums
+@app.route("/<int:referral>")
+def referralTracking(referral):
+    open("data/referralhistory.txt", 'a+').write(str(referral) + "\n")
+    return redirect(url_for('index'))
+
+
 @app.route("/exportcalendar")
 def downloadCalendar():
-    open("data/downloadhistory.txt", 'a+').write(session['search'] + ", ")
+    open("data/downloadhistory.txt", 'a+').write(session['search'] + "\n")
+
+    # Make list out of search terms
+    searchterm = [x.strip().lower() for x in session['search'].split(",")]
+
+    # Filter for separate search terms
+    newCal = []
+    uniques = set()
+    for t in cal:
+        for term in searchterm:
+            if t.get("SUMMARY") not in uniques and (term.lower() in t.get(
+                    "SUMMARY").lower() or term.lower() in t.get(
+                    "DESCRIPTION").lower()):
+                newCal.append(t)
+                uniques.add(t.get("SUMMARY"))
+
+    makeICS(newCal, session['search'])
 
     try:
         print('downloading', session['search'])
