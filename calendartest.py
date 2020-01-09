@@ -129,6 +129,7 @@ def combineEvents(urlList):
     return filterByDate(eventsList,datetime.datetime.now()), succ
 
 def filterByDate(eventList,mindate):
+    mindate = mindate-datetime.timedelta(days=1)
     datetimenow = mindate.replace(tzinfo = pytz.UTC)
     datenow = datetimenow.date()
     filtered = []
@@ -189,7 +190,7 @@ print("combining")
 combined = eventList + forbiddenList + clubList + labsList
 
 print("filtering")
-current = filterByDate(combined, datetime.datetime.now()-datetime.timedelta(days=1)) # Take only events that are after yesterday, to get the most recent ones
+current = filterByDate(combined, datetime.datetime.now()) # Take only events that are after yesterday, to get the most recent ones
 
 
 print(len(current), "current events")

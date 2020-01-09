@@ -116,7 +116,7 @@ def index():
         if Everything:
             filename = "everything"
         else:
-            filename = "".join(searchterm)
+            filename = ",".join(searchterm)
 
         session['search'] = filename
 
@@ -133,7 +133,7 @@ def index():
             [thing.get('SUMMARY'), remove_tags(thing.get('DESCRIPTION')),
              thing.get('LOCATION'),
              thing.get('DTSTART'), thing.get('DTEND'), thing.get('URL')] for
-            thing in newCal if len(thing.get("DESCRIPTION").strip()) >= 1]
+            thing in newCal if len(thing.get("DESCRIPTION").strip()) >= 1] # This requirement kicks out a lot of events, but they're events that need to be kicked out
 
         # Sort eventList by date so it displays properly
         try:
@@ -164,21 +164,37 @@ def referralTracking(referral):
 def downloadCalendar():
     open("data/downloadhistory.txt", 'a+').write(session['search'] + "\n")
 
-    # Make list out of search terms
-    searchterm = [x.strip().lower() for x in session['search'].split(",")]
+    g = open("../calendars/current.ics", 'rb')
+    cal = Calendar.from_ical(g.read())
+    cal = cal.walk()[1:]
+    if len(cal) < 5:
+        g = open("../calendars/currentBackup.ics", 'rb')
+        cal = Calendar.from_ical(g.read())
+        cal = cal.walk()[1:]
 
-    # Filter for separate search terms
     newCal = []
     uniques = set()
-    for t in cal:
-        for term in searchterm:
-            if t.get("SUMMARY") not in uniques and (term.lower() in t.get(
-                    "SUMMARY").lower() or term.lower() in t.get(
+    # Make list out of search terms
+    if session['search'] != "everything":
+        searchterm = [x.strip().lower() for x in session['search'].split(",")]
+
+        # Filter for separate search terms
+        for t in cal:
+            for term in searchterm:
+                if t.get("SUMMARY") not in uniques and (term.lower() in t.get(
+                        "SUMMARY").lower() or term.lower() in t.get(
                     "DESCRIPTION").lower()):
-                newCal.append(t)
+                    newCal.append(t)
+                    uniques.add(t.get("SUMMARY"))
+    else:
+        for t in cal:
+            if t.get("SUMMARY") not in uniques:
                 uniques.add(t.get("SUMMARY"))
+                newCal.append(t)
 
     makeICS(newCal, session['search'])
+    print(session['search'])
+    print(len(newCal))
 
     try:
         print('downloading', session['search'])
