@@ -10,6 +10,9 @@ import re
 # TODO: Should I add Pitt sites? Here's their main Calendar
 # webcal://calendar.pitt.edu/calendar.ics
 
+extras = ["https://calendar.google.com/calendar/ical/bsl9um0icm15p91qfs6f130o28%40group.calendar.google.com/private-ba4910384454db5dea7f348da1870c41/basic.ics",
+            ]
+
 sites = ["https://thebridge.cmu.edu/events.ics",
          "https://calendar.google.com/calendar/ical/andrew.cmu.edu_333234353933332d373938%40resource.calendar.google.com/public/basic.ics",
          "https://www.cs.cmu.edu/calendar/export.ics",
@@ -153,11 +156,11 @@ def combine(eventsList):
     for event in eventsList:
         try:
             name = event['SUMMARY'] # Eliminates redundant events from eventsList
-            if name not in eventNames:
+            if (name not in eventNames) and len(event['DESCRIPTION']) > 0:
                 cal.add_component(event)
                 eventNames.add(name)
         except:
-            print("event had no summary: ", event)
+            print("event had no summary and/or description: ", event)
     return cal
 
 # Gets the url for the ics of a google calendar from its uid and id
@@ -180,14 +183,15 @@ eventList,err1 = combineEvents(sites)
 forbiddenList,err2 = combineEvents(forbidden)
 clubList,err3 = combineEvents(clubs)
 labsList,err4 = combineEvents(labs)
+manualList,err5 = combineEvents(extras)
 
-numcals = len(sites) + len(forbidden) + len(clubs) + len(labs)
+numcals = len(sites) + len(forbidden) + len(clubs) + len(labs) + len(manualList)
 print("number of calendars parsed: ", numcals)
-print("success rate: ", 100*(err1+err2+err3+err4)/numcals)
+print("success rate: ", 100*(err1+err2+err3+err4+err5)/numcals)
 
 
 print("combining")
-combined = eventList + forbiddenList + clubList + labsList
+combined = eventList + forbiddenList + clubList + labsList + manualList
 
 print("filtering")
 current = filterByDate(combined, datetime.datetime.now()) # Take only events that are after yesterday, to get the most recent ones
