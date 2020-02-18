@@ -3,6 +3,7 @@ from flask import Flask, render_template, url_for, render_template_string, Marku
 
 import re
 import sys
+import datetime
 import os
 import time
 from icalendar import *
@@ -70,11 +71,11 @@ def index():
         orig_search_form = request.form['search']
         if orig_search_form.strip() == "":
             Everything = True
-            open("data/searchhistory.txt", 'a+').write("everything\n")
+            open("data/searchhistory.txt", 'a+').write(datetime.now().strftime("%d/%m/%Y %H:%M:%S") + " " + "everything\n")
             print("search for everything")
         else:
             Everything = False
-            open("data/searchhistory.txt", 'a+').write(orig_search_form + "\n")
+            open("data/searchhistory.txt", 'a+').write(datetime.now().strftime("%d/%m/%Y %H:%M:%S") + " " + orig_search_form + "\n")
             print("search for", orig_search_form)
 
         # Make list out of search terms
@@ -86,10 +87,10 @@ def index():
         uniques = set()
         for t in cal:
             for term in searchterm:
-                if t.get("SUMMARY") not in uniques and (term.lower() in t.get("SUMMARY").lower() or term.lower() in t.get(
+                if t.get("SUMMARY")+str(t.get("DTSTART").dt) not in uniques and (term.lower() in t.get("SUMMARY").lower() or term.lower() in t.get(
                     "DESCRIPTION").lower()):
                     newCal.append(t)
-                    uniques.add(t.get("SUMMARY"))
+                    uniques.add(t.get("SUMMARY")+str(t.get("DTSTART").dt))
 
         # Generate an eventList for the main.html template to fill in
         eventList = [
@@ -124,10 +125,14 @@ def index():
         newCal = []
         uniques = set()
         for t in cal:
-            if t.get("SUMMARY") not in uniques:
-                uniques.add(t.get("SUMMARY"))
-                newCal.append(t)
-
+            print(t.get("SUMMARY"), str(t.get("DTSTART").dt))
+            try:
+                if t.get("SUMMARY")+str(t.get("DTSTART").dt) not in uniques:
+                    uniques.add(t.get("SUMMARY")+str(t.get("DTSTART").dt))
+                    newCal.append(t)
+            except:
+                print("default page unique filter fail")
+        print(uniques)
         # Generate an eventList for the main.html template to fill in
         eventList = [
             [thing.get('SUMMARY'), remove_tags(thing.get('DESCRIPTION')),
@@ -181,15 +186,15 @@ def downloadCalendar():
         # Filter for separate search terms
         for t in cal:
             for term in searchterm:
-                if t.get("SUMMARY") not in uniques and (term.lower() in t.get(
+                if t.get("SUMMARY")+str(t.get("DTSTART").dt) not in uniques and (term.lower() in t.get(
                         "SUMMARY").lower() or term.lower() in t.get(
                     "DESCRIPTION").lower()):
                     newCal.append(t)
-                    uniques.add(t.get("SUMMARY"))
+                    uniques.add(t.get("SUMMARY")+str(t.get("DTSTART").dt))
     else:
         for t in cal:
-            if t.get("SUMMARY") not in uniques:
-                uniques.add(t.get("SUMMARY"))
+            if t.get("SUMMARY")+str(t.get("DTSTART").dt) not in uniques:
+                uniques.add(t.get("SUMMARY")+str(t.get("DTSTART").dt))
                 newCal.append(t)
 
     makeICS(newCal, session['search'])

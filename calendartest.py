@@ -5,12 +5,14 @@ import requests as r
 import time
 import re
 
+# 2/17 you added summary+datetime checks on sitebuilder then realized you do the same thing here in combine. Redundancy, to remedy later.
 
+# Add this later: HKSA andrew.cmu.edu_b25qoeqpgrml2duvr76ddj0nvk%40group.calendar.google.com
 
 # TODO: Should I add Pitt sites? Here's their main Calendar
 # webcal://calendar.pitt.edu/calendar.ics
 
-extras = ["https://calendar.google.com/calendar/ical/bsl9um0icm15p91qfs6f130o28%40group.calendar.google.com/private-ba4910384454db5dea7f348da1870c41/basic.ics",
+extras = ["https://calendar.google.com/calendar/ical/bsl9um0icm15p91qfs6f130o28%40group.calendar.google.com/private-ba4910384454db5dea7f348da1870c41/basic.ics","https://thebridge.cmu.edu/events.ics",
             ]
 
 sites = ["https://thebridge.cmu.edu/events.ics",
@@ -60,8 +62,12 @@ clubs = ["https://calendar.google.com/calendar/ical/andrew.cmu.edu_qlki4fofh1c88
 "https://calendar.google.com/calendar/ical/cmu.scottylabs@gmail.com/public/basic.ics",
 "https://calendar.google.com/calendar/ical/utd7jhfrl48p37jth64hue0lis%40group.calendar.google.com/public/basic.ics",
 "https://calendar.google.com/calendar/ical/studioforcreativeinquiry%40gmail.com/public/basic.ics",
-"https://calendar.google.com/calendar/ical/andrew.cmu.edu_j1rdb53mqfj67ch9477hcpl2s8%40group.calendar.google.com/public/basic.ics"
+"https://calendar.google.com/calendar/ical/andrew.cmu.edu_j1rdb53mqfj67ch9477hcpl2s8%40group.calendar.google.com/public/basic.ics",
+"https://calendar.google.com/calendar/ical/andrew.cmu.edu_b25qoeqpgrml2duvr76ddj0nvk%40group.calendar.google.com/public/basic.ics",
+"https://calendar.google.com/calendar/ical/efrdv449m13u8atk9fl8hhv8o4@group.calendar.google.com/public/basic.ics"
 ]
+
+
 
 labs = ["https://calendar.google.com/calendar/ical/cmuips%40andrew.cmu.edu/public/basic.ics",
 "https://calendar.google.com/calendar/ical/leonard.gelfand.center@gmail.com/public/basic.ics",
@@ -78,7 +84,8 @@ labs = ["https://calendar.google.com/calendar/ical/cmuips%40andrew.cmu.edu/publi
 "https://calendar.google.com/calendar/ical/o67cde9racfa9ss5vcvafvokss%40group.calendar.google.com/public/basic.ics"]
 
 
-
+# Create Timezone object
+EST = pytz.timezone('America/New_York')
 
 # Make a event ref from example.ics
 g = open('example.ics', 'rb')
@@ -114,6 +121,13 @@ def eventmineURL(url):
     cal = Calendar.from_ical(r.get(url).text)
     for item in cal.walk():
         if type(item) == eventTypeRef:
+            if type(item['DTSTART'].dt)  == datetime.datetime:
+                try:
+                    item['DTSTART'] = prop.vDatetime(item['DTSTART'].dt.astimezone(EST))
+                    item['DTEND'] = prop.vDatetime(item['DTEND'].dt.astimezone(EST))
+                except:
+                    pass
+
             eventsList.append(item)
     return eventsList
 
@@ -142,7 +156,7 @@ def filterByDate(eventList,mindate):
             if event.get('dtstart').dt > datetimenow:
                 filtered.append(event)
         except:
-            pass
+            # pass
             try:
                 if event.get('dtstart').dt > datenow:
                     filtered.append(event)
@@ -155,7 +169,7 @@ def combine(eventsList):
     eventNames = set()
     for event in eventsList:
         try:
-            name = event['SUMMARY'] # Eliminates redundant events from eventsList
+            name = event['SUMMARY']+str(event.get("DTSTART").dt) # Eliminates redundant events from eventsList
             if (name not in eventNames) and len(event['DESCRIPTION']) > 0:
                 cal.add_component(event)
                 eventNames.add(name)
@@ -196,27 +210,15 @@ combined = eventList + forbiddenList + clubList + labsList + manualList
 print("filtering")
 current = filterByDate(combined, datetime.datetime.now()) # Take only events that are after yesterday, to get the most recent ones
 
-
 print(len(current), "current events")
-
-# clubsList = combineEvents(clubs)
-# current = filterByDate(clubsList, datetime.datetime.now())
-
-# strList = ["pizza","cookie","food","lunch", "picnic", "dinner"]
-# pizzaList = []
-#
-# for event in current:
-#     try:
-#         desc = event['DESCRIPTION']
-#         if any(x in desc.lower() for x in strList):
-#             pizzaList.append(event)
-#     except:
-#         pass
 
 print("saving")
 saveICS("current",combine(current))
 
 
+# manualList,err5 = combineEvents(extras)
+# saveICS("current",combine(filterByDate(manualList,datetime.datetime.now())))
+# manualList[0]['DTSTART'].dt.astimezone(pytz.timezone('America/New_York'))
 
 
 
@@ -325,6 +327,9 @@ saveICS("current",combine(current))
 # Carnegie Mellon Tickets:
 # https://carnegiemellontickets.universitytickets.com/w/calendar.aspx
 
+# C++ Singing: sent through email
+# https://calendar.google.com/calendar/ical/efrdv449m13u8atk9fl8hhv8o4@group.calendar.google.com/public/basic.ics
+
 # ANVIL: https://cmuanvil.wordpress.com/
 # andrew.cmu.edu_j1rdb53mqfj67ch9477hcpl2s8%40group.calendar.google.com
 
@@ -384,6 +389,9 @@ saveICS("current",combine(current))
 
 # CMU Library TODO: https://cmu.libcal.com/
 # Libcal :(
+
+# HSKA: "https://calendar.google.com/calendar/ical/andrew.cmu.edu_b25qoeqpgrml2duvr76ddj0nvk%40group.calendar.google.com/public/basic.ics"
+# TODO: Private calendar :(
 
                                 # PUBLIC DOMAIN
 
