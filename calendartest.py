@@ -4,6 +4,7 @@ import pytz
 import requests as r
 import time
 import re
+import os
 
 # 2/17 you added summary+datetime checks on sitebuilder then realized you do the same thing here in combine. Redundancy, to remedy later.
 
@@ -97,6 +98,8 @@ def remove_tags(text):
     return TAG_RE.sub('', text)
 
 def saveICS(name,calendar):
+    if not os.path.exists("calendars"):
+        os.makedirs("calendars")
     calendar.add('prodid', name)
     calendar.add('version', '2.0')
 
