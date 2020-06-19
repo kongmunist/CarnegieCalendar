@@ -19,7 +19,7 @@ FLATPAGES_AUTO_RELOAD = DEBUG
 forbidden_searches = ['pizza', 'lunch', 'food', 'free', 'swag', 'merch', 'dinner'] # Maybe use these if you commercialize
 
 # To get instance of event type, we use example.ics
-g = open('static/example.ics', 'rb')
+g = open('website/static/example.ics', 'rb')
 cal = Calendar.from_ical(g.read())
 eventTypeRef = type(cal.walk()[-1])
 
@@ -34,7 +34,7 @@ def makeICS(eventList, name):
     calendar.add('prodid', "Carnegie Calendar")
     calendar.add('version', '2.0')
 
-    f = open("generatedcals/" + name + ".ics",'wb+')
+    f = open("website/generatedcals/" + name + ".ics",'wb+')
 
     f.write(calendar.to_ical())
     f.close()
@@ -55,12 +55,12 @@ def index():
     eventList = []
     header = ""
 
-    g = open("../calendars/current.ics", 'rb')
+    g = open("calendars/current.ics", 'rb')
     cal = Calendar.from_ical(g.read())
     cal = cal.walk()[1:]
 
     if len(cal) < 5:
-        g = open("../calendars/currentBackup.ics", 'rb')
+        g = open("calendars/currentBackup.ics", 'rb')
         cal = Calendar.from_ical(g.read())
         cal = cal.walk()[1:]
 
@@ -71,11 +71,11 @@ def index():
         orig_search_form = request.form['search']
         if orig_search_form.strip() == "":
             Everything = True
-            open("data/searchhistory.txt", 'a+').write(datetime.now().strftime("%d/%m/%Y %H:%M:%S") + " " + "everything\n")
+            open("website/data/searchhistory.txt", 'a+').write(datetime.now().strftime("%d/%m/%Y %H:%M:%S") + " " + "everything\n")
             print("search for everything")
         else:
             Everything = False
-            open("data/searchhistory.txt", 'a+').write(datetime.now().strftime("%d/%m/%Y %H:%M:%S") + " " + orig_search_form + "\n")
+            open("website/data/searchhistory.txt", 'a+').write(datetime.now().strftime("%d/%m/%Y %H:%M:%S") + " " + orig_search_form + "\n")
             print("search for", orig_search_form)
 
         # Make list out of search terms
@@ -167,13 +167,13 @@ def referralTracking(referral):
 
 @app.route("/exportcalendar")
 def downloadCalendar():
-    open("data/downloadhistory.txt", 'a+').write(session['search'] + "\n")
+    open("website/data/downloadhistory.txt", 'a+').write(session['search'] + "\n")
 
-    g = open("../calendars/current.ics", 'rb')
+    g = open("calendars/current.ics", 'rb')
     cal = Calendar.from_ical(g.read())
     cal = cal.walk()[1:]
     if len(cal) < 5:
-        g = open("../calendars/currentBackup.ics", 'rb')
+        g = open("calendars/currentBackup.ics", 'rb')
         cal = Calendar.from_ical(g.read())
         cal = cal.walk()[1:]
 
