@@ -5,6 +5,10 @@ import requests as r
 import time
 import re
 import os
+from threading import Thread,Lock
+
+#lock/mutex for combineEvents
+lock = Lock()
 
 # 2/17 you added summary+datetime checks on sitebuilder then realized you do the same thing here in combine. Redundancy, to remedy later.
 
@@ -17,20 +21,21 @@ extras = ["https://calendar.google.com/calendar/ical/bsl9um0icm15p91qfs6f130o28%
             ]
 
 sites = ["https://thebridge.cmu.edu/events.ics",
-         "https://calendar.google.com/calendar/ical/andrew.cmu.edu_333234353933332d373938%40resource.calendar.google.com/public/basic.ics",
          "https://www.cs.cmu.edu/calendar/export.ics",
-         "https://events.time.ly/0qe3bmk/export?format=ics&filterGroupItems=8498",
          "https://events.time.ly/vdibqnd/export?format=ics",
          "https://calendar.google.com/calendar/ical/t6ebuir6klabea3q87b5qjs360@group.calendar.google.com/public/basic.ics",
          # "https://athletics.cmu.edu/composite?print=ical", # These events suck
          "https://thebridge.cmu.edu/events.ics"
          ]
 
-forbidden = ["https://events.time.ly/0qe3bmk/export?format=ics&categories=21686&filterGroupItems=8498",
-            "https://events.time.ly/0qe3bmk/export?format=ics&categories=21683&filterGroupItems=8498",
-            "https://events.time.ly/0qe3bmk/export?format=ics&categories=21684&filterGroupItems=8498",
-            "https://events.time.ly/0qe3bmk/export?format=ics&categories=21685&filterGroupItems=8498",
-            "http://www.cbd.cmu.edu/?plugin=all-in-one-event-calendar&controller=ai1ec_exporter_controller&action=export_events&no_html=true",
+forbidden = [ "https://timelyapp.time.ly/api/calendars/54703220/export?format=ics&categories=677430534&timely_id=timely_0.39786058117271694",
+            # Physic department link. Broken, but replaced by above"https://events.time.ly/0qe3bmk/export?format=ics&categories=21686&filterGroupItems=8498",
+            #Math department link. Broken, but replaced below"https://events.time.ly/0qe3bmk/export?format=ics&categories=21683&filterGroupItems=8498",
+            "https://timelyapp.time.ly/api/calendars/54703220/export?format=ics&categories=677430531&filter_groups=677430583&timely_id=timely_0.3689341916690556",
+            "https://timelyapp.time.ly/api/calendars/54703220/export?format=ics&categories=677430532&filter_groups=677430583&timely_id=timely_0.14297524898164982",
+            #Biology department link. replaced below"https://events.time.ly/0qe3bmk/export?format=ics&categories=21685&filterGroupItems=8498",
+            "https://timelyapp.time.ly/api/calendars/54703220/export?format=ics&categories=677430533&filter_groups=677430583&timely_id=timely_0.13951306083680404",
+            # Not working "http://www.cbd.cmu.edu/?plugin=all-in-one-event-calendar&controller=ai1ec_exporter_controller&action=export_events&no_html=true",
             "https://hcii.cmu.edu/news/calendar/ical/calendar.ics",
             "https://www.ri.cmu.edu/events/?ical=1",
             "https://tockify.com/api/feeds/ics/cmu.mld",
@@ -42,9 +47,9 @@ forbidden = ["https://events.time.ly/0qe3bmk/export?format=ics&categories=21686&
             "https://calendar.google.com/calendar/ical/01l1t6sb5tbaqi66bg8b19k37o%40group.calendar.google.com/public/basic.ics",
             "https://calendar.google.com/calendar/ical/cmuips%40andrew.cmu.edu/public/basic.ics",
             "https://calendar.google.com/calendar/ical/cmu.history%40gmail.com/public/basic.ics",
-            "https://calendar.google.com/calendar/ical/sg3f1so6vfkrie3e0f5pbcgte4%40group.calendar.google.com/public/basic.ics",
+            #Fails here, not sure what this is"https://calendar.google.com/calendar/ical/sg3f1so6vfkrie3e0f5pbcgte4%40group.calendar.google.com/public/basic.ics",
             "https://calendar.google.com/calendar/ical/n42ba22iiu02508n0h7hnreabk%40group.calendar.google.com/public/basic.ics",
-            "https://calendar.google.com/calendar/ical/6s7ucb5etjine4d1a6ciqai73c%40group.calendar.google.com/public/basic.ics",
+            #Broken "https://calendar.google.com/calendar/ical/6s7ucb5etjine4d1a6ciqai73c%40group.calendar.google.com/public/basic.ics",
             "http://drama.cmu.edu/?plugin=all-in-one-event-calendar&controller=ai1ec_exporter_controller&action=export_events&no_html=true&ai1ec_cat_ids=218",
             "https://calendar.google.com/calendar/ical/soa-faculty%40andrew.cmu.edu/public/basic.ics",
             "https://calendar.google.com/calendar/ical/soa-public%40andrew.cmu.edu/public/basic.ics",
@@ -64,7 +69,7 @@ clubs = ["https://calendar.google.com/calendar/ical/andrew.cmu.edu_qlki4fofh1c88
 "https://calendar.google.com/calendar/ical/utd7jhfrl48p37jth64hue0lis%40group.calendar.google.com/public/basic.ics",
 "https://calendar.google.com/calendar/ical/studioforcreativeinquiry%40gmail.com/public/basic.ics",
 "https://calendar.google.com/calendar/ical/andrew.cmu.edu_j1rdb53mqfj67ch9477hcpl2s8%40group.calendar.google.com/public/basic.ics",
-"https://calendar.google.com/calendar/ical/andrew.cmu.edu_b25qoeqpgrml2duvr76ddj0nvk%40group.calendar.google.com/public/basic.ics",
+#Private, so will need to find out more before doing anything"https://calendar.google.com/calendar/ical/andrew.cmu.edu_b25qoeqpgrml2duvr76ddj0nvk%40group.calendar.google.com/public/basic.ics",
 "https://calendar.google.com/calendar/ical/efrdv449m13u8atk9fl8hhv8o4@group.calendar.google.com/public/basic.ics"
 ]
 
@@ -73,7 +78,7 @@ clubs = ["https://calendar.google.com/calendar/ical/andrew.cmu.edu_qlki4fofh1c88
 labs = ["https://calendar.google.com/calendar/ical/cmuips%40andrew.cmu.edu/public/basic.ics",
 "https://calendar.google.com/calendar/ical/leonard.gelfand.center@gmail.com/public/basic.ics",
 "https://calendar.google.com/calendar/ical/cmu.icc%40gmail.com/public/basic.ics",
-"https://calendar.google.com/calendar/ical/bm3mt8r4784bi563b1jg4tgijo@group.calendar.google.com/public/basic.ics",
+#No documentation, so I don't know what to do"https://calendar.google.com/calendar/ical/bm3mt8r4784bi563b1jg4tgijo@group.calendar.google.com/public/basic.ics",
 "https://calendar.google.com/calendar/ical/86cvp8rs4pbcnfvc8t4v7ku05o@group.calendar.google.com/public/basic.ics",
 "https://calendar.google.com/calendar/ical/ehilrdcr39kf3p7lrtnck0vvs8@group.calendar.google.com/public/basic.ics",
 "https://tockify.com/api/feeds/ics/swartzcalendar",
@@ -133,19 +138,29 @@ def eventmineURL(url):
             eventsList.append(item)
     return eventsList
 
+#Threading function 
+def scrapeInParallel(url,l,eventsList,succ):
+    try:
+        a = eventmineURL(url)
+        l.acquire()
+        eventsList.extend(a)
+        succ[0]=succ[0]+1
+        l.release()
+    except Exception as e:
+        print(str(e))
+        print("combine failed on " + url)
+# Copied previous function, except ran it as threading function
 def combineEvents(urlList):
     eventsList = []
-    succ = 0
+    succ = [0]
     for url in urlList:
         print(url)
-        try:
-            eventsList.extend(eventmineURL(url))
-            succ += 1
-        except Exception as e:
-            print(str(e))
-            print("combine failed on " + url)
+        p = Thread(target=scrapeInParallel,args=(url,lock,eventsList,succ))
+        p.start()
+        p.join()
 
     return filterByDate(eventsList,datetime.datetime.now()), succ
+
 
 def filterByDate(eventList,mindate):
     mindate = mindate-datetime.timedelta(days=1)
@@ -193,11 +208,11 @@ def face(str):
 
 
 def fetchCurrentCalendar():
-    eventList,err1 = combineEvents(sites)
-    forbiddenList,err2 = combineEvents(forbidden)
-    clubList,err3 = combineEvents(clubs)
-    labsList,err4 = combineEvents(labs)
-    manualList,err5 = combineEvents(extras)
+    eventList,[err1] = combineEvents(sites)
+    forbiddenList,[err2] = combineEvents(forbidden)
+    clubList,[err3] = combineEvents(clubs)
+    labsList,[err4] = combineEvents(labs)
+    manualList,[err5] = combineEvents(extras)
     
     numcals = len(sites) + len(forbidden) + len(clubs) + len(labs) + len(manualList)
     print("number of calendars parsed: ", numcals)
@@ -212,11 +227,7 @@ def fetchCurrentCalendar():
     
     print("saving")
     saveICS("current",combine(current))
-
-
-
-
-
+fetchCurrentCalendar()
 # manualList,err5 = combineEvents(extras)
 # saveICS("current",combine(filterByDate(manualList,datetime.datetime.now())))
 # manualList[0]['DTSTART'].dt.astimezone(pytz.timezone('America/New_York'))
@@ -401,14 +412,16 @@ def fetchCurrentCalendar():
 # CMU STUDENT AFFAIRS CALENDAR
 # "https://tockify.com/api/feeds/ics/carnegie.mellon.student.affairs"
 
+# NOTE: the site below has a calendar corresponding to the link above. Not sure what link below is, but it doesn't work
 # CMU Main Events: https://www.cmu.edu/events/
 # https://calendar.google.com/calendar/ical/andrew.cmu.edu_333234353933332d373938%40resource.calendar.google.com/public/basic.ics
+
 
 # SCS Events: https://www.cs.cmu.edu/calendar?page=0
 # https://www.cs.cmu.edu/calendar/export.ics
 
 # Mellon College of Science: https://events.mcs.cmu.edu/
-# https://events.time.ly/0qe3bmk/export?format=ics&filterGroupItems=8498
+# https://timelyapp.time.ly/api/calendars/54703220/export?format=xml&filter_groups=677430583,677430575,677430576,677430580,677430577&timely_id=timely_0.5714552038110052
 
 # School of Music: https://www.cmu.edu/cfa/music/concerts-events/index.html
 # https://events.time.ly/vdibqnd/export?format=ics
@@ -441,16 +454,19 @@ def fetchCurrentCalendar():
 
 # Physics: https://www.cmu.edu/physics/news-events/events/index.html
 # https://events.time.ly/0qe3bmk/export?format=ics&categories=21686&filterGroupItems=8498
+#Upadted from site: https://timelyapp.time.ly/api/calendars/54703220/export?format=ics&categories=677430534&timely_id=timely_0.39786058117271694
 
 # Mathematics: https://www.cmu.edu/math/news-events/calendar.html
 # https://events.time.ly/0qe3bmk/export?format=ics&categories=21683&filterGroupItems=8498
+#Updated link: https://timelyapp.time.ly/api/calendars/54703220/export?format=ics&categories=677430531&filter_groups=677430583&timely_id=timely_0.3689341916690556
 
 # Chemistry: https://www.cmu.edu/chemistry/news/calendar.html
 # https://events.time.ly/0qe3bmk/export?format=ics&categories=21684&filterGroupItems=8498
+#UPDATED from site: https://timelyapp.time.ly/api/calendars/54703220/export?format=ics&categories=677430532&filter_groups=677430583&timely_id=timely_0.14297524898164982
 
 # Biology: https://www.cmu.edu/bio/events/index.html
 # https://events.time.ly/0qe3bmk/export?format=ics&categories=21685&filterGroupItems=8498
-
+#UPDATED: https://timelyapp.time.ly/api/calendars/54703220/export?format=ics&categories=677430533&filter_groups=677430583&timely_id=timely_0.13951306083680404
                                         # SCS
 
 # Computational Biology Department: http://www.cbd.cmu.edu/calendar/
@@ -506,7 +522,7 @@ def fetchCurrentCalendar():
 # https://calendar.google.com/calendar/ical/cmu.history%40gmail.com/public/basic.ics
 # https://calendar.google.com/calendar/ical/sg3f1so6vfkrie3e0f5pbcgte4%40group.calendar.google.com/public/basic.ics
 # https://calendar.google.com/calendar/ical/n42ba22iiu02508n0h7hnreabk%40group.calendar.google.com/public/basic.ics
-# https://calendar.google.com/calendar/ical/6s7ucb5etjine4d1a6ciqai73c%40group.calendar.google.com/public/basic.ics
+# Broken, but probably covered by above https://calendar.google.com/calendar/ical/6s7ucb5etjine4d1a6ciqai73c%40group.calendar.google.com/public/basic.ics
 
 
                                         # CFA
