@@ -10,8 +10,11 @@ export default function Search() {
 
   const handleSubmit = () => {
     console.log(searchQuery, datesRange) // for testing purpose
-    // TO-DO: parse searchQuery as a list of keywords
-    // TO-DO: pass searchQuery and datesRange to API
+    let dates = datesRange.split(" - ")
+    let start = Date.parse(dates[0])
+    let end = Date.parse(dates[1])
+    console.log(start, end) // for testing purpose
+    // TO-DO: pass searchQuery, start and end to API
   }
 
   const handleQueryChange = (_, value) => {
@@ -26,8 +29,11 @@ export default function Search() {
     <DatesRangeInput
       name="datesRange"
       placeholder="From - To"
+      dateFormat="YYYY-MM-DD"
+      popupPosition="left center"
       value={datesRange}
       iconPosition="left"
+      allowSameEndDate={true}
       clearable={true}
       clearIcon={<Icon name="undo" color="grey"/>}
       onChange={(event, {name, value}) => handleDateChange(event, {name, value})}
@@ -35,30 +41,37 @@ export default function Search() {
   )
 
   const formCSS = {
-    width:500,
+    width: "100%",
+    minWidth: 200
   }
 
   const labelCSS = {
     textAlign: 'left',
     padding: 5,
     fontSize: 20,
-    fontWeight: 'bold'
+    fontWeight: 'bold',
+    width: "100%"
   }
 
   const buttonCSS = {
-    marginTop: 10,
-    backgroundColor: 'grey',
-    color: 'white'
+    marginTop: 20,
+    backgroundColor: 'DarkSlateGrey',
+    color: 'white',
+    height: 50,
+    width: "30%",
+    minWidth: 120,
+    fontSize: 15
   }
 
+  // TO-DO: fix date range: either disable keyboard input or make it work normally
   return (
-    <Form onSubmit={handleSubmit} inverted={true} size="big">
+    <Form onSubmit={handleSubmit} inverted={true} size="big" style={{width: 520, padding: 20}}>
       <h1 style={labelCSS}>Search</h1>
       <Form.Field
         style={formCSS}
         control={Input}
         onChange={(e, value) => handleQueryChange(e, value)}
-        placeholder='Search for one or more keyword, separated with commas.'
+        placeholder='Search for one or more keyword, separated with space.'
       />
 
       <h1 style={labelCSS}>Date</h1>
@@ -68,7 +81,7 @@ export default function Search() {
       />
 
       <Form.Field control={Button} style={buttonCSS}>
-        <Icon name="check circle" color="white"/>
+        <Icon name="check circle" color="olive"/>
         Submit
       </Form.Field>
     </Form>
