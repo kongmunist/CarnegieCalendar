@@ -59,8 +59,8 @@ export default function Search() {
     color: 'white',
     height: 50,
     width: "30%",
-    minWidth: 120,
-    fontSize: 15
+    minWidth: 125,
+    fontSize: 16
   }
 
   // TO-DO: fix date range: either disable keyboard input or make it work normally
@@ -71,7 +71,7 @@ export default function Search() {
         style={formCSS}
         control={Input}
         onChange={(e, value) => handleQueryChange(e, value)}
-        placeholder='Search for one or more keyword, separated with space.'
+        placeholder='Search for space-separated keyword(s).'
       />
 
       <h1 style={labelCSS}>Date</h1>
