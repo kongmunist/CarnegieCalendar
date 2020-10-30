@@ -3,7 +3,7 @@ import { Form, Input, Button, Icon } from 'semantic-ui-react'
 import { DatesRangeInput } from 'semantic-ui-calendar-react';
 
 
-export default function Search() {
+export default function Search(props) {
 
   const [searchQuery, setSearchQuery] = useState('');
   const [datesRange, setDatesRange] = useState('');
@@ -14,7 +14,14 @@ export default function Search() {
     let start = Date.parse(dates[0])
     let end = Date.parse(dates[1])
     console.log(start, end) // for testing purpose
+    
     // TO-DO: pass searchQuery, start and end to API
+    let api_url = `http://127.0.0.1:5050/search?search_str=${searchQuery}&start_time=${start}&end_time=${end}`; 
+    // TO-DO: once API is hosted, change API call, add other parameters
+    // TO-DO: remind other people working on frontend to take in content as props
+    fetch(api_url)
+      .then(response => response.json())
+      .then(data => props.setContent(data));
   }
 
   const handleQueryChange = (_, value) => {
