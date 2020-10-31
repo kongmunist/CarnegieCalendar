@@ -15,6 +15,9 @@ import pymongo
 from flask_cors import CORS
 
 from apscheduler.schedulers.background import BackgroundScheduler
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
 app.config.from_object(__name__)
@@ -60,7 +63,7 @@ app.jinja_env.globals.update(dateconvert=dateconvert)
 
 def getAllEvents():
     #connect to db
-    client = pymongo.MongoClient('mongodb://127.0.0.1:27017/')
+    client = pymongo.MongoClient(os.getenv("MONGODB_ADDRESS"))
     db = client["carnegiecalendar"]
     col = db["events"]
     eventList = col.find({}, {'_id': False})
@@ -166,7 +169,7 @@ def search():
     
 ###### FETCH DATA ######
 if __name__ == "__main__":
-    app.run(port=5050)
+    app.run(port=os.getenv("PORT"))
 
 def newDataAsync():
     pro = Process(
