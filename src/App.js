@@ -4,33 +4,41 @@ import { Container, Grid } from 'semantic-ui-react'
 import HeaderRegion from './components/HeaderRegion'
 import ResultsList from './components/ResultsList'
 import SearchBox from './components/SearchBox'
+import Footer from './components/Footer'
 
 function App() {
   const [events, setEvents] = useState([])
 
-  // Temporary -- just so we can see the search component
-  // TODO: Actually make this look decent
-  const searchRowCSS = {
-    backgroundColor: '#282c34',
-    color: 'white',
-    borderRadius: '2em'
+  let footerStyle = {
+    backgroundColor: '#77212E',
+    position: 'fixed',
+    height: 90,
+    width: '100%',
+    bottom: 0,
+    verticalAlign: 'middle'
   }
 
   return (
-    <div className="App">
-      <Container>
+    <div className="App" style={{positive:"relative", minHeight:"100vh"}}>
+      <Container style={{marginBottom:150}}>
         <Grid centered padded>
           <Grid.Row>
             <HeaderRegion />
           </Grid.Row>
-          <Grid.Row style={searchRowCSS}>
+
+          <Grid.Row>
             <SearchBox setContent={setEvents} />
           </Grid.Row>
+
           <Grid.Row>
             <ResultsList events={events} />
           </Grid.Row>
         </Grid>
       </Container>
+
+      <Grid.Row style={footerStyle}>
+        <Footer/>
+      </Grid.Row>
     </div>
   );
 }

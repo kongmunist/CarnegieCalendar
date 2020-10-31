@@ -49,7 +49,7 @@ export default function SearchBox (props) {
 
   const formCSS = {
     width: "100%",
-    minWidth: 200
+    minWidth: 200,
   }
 
   const labelCSS = {
@@ -57,17 +57,18 @@ export default function SearchBox (props) {
     padding: 5,
     fontSize: 20,
     fontWeight: 'bold',
-    width: "100%"
+    width: "100%",
+    color: "#77212E"
   }
 
   const buttonCSS = {
     marginTop: 20,
-    backgroundColor: 'DarkSlateGrey',
-    color: 'white',
+    backgroundColor: "#77212E",
+    color: '#FFF5EE',
     height: 50,
     width: "30%",
     minWidth: 125,
-    fontSize: 16
+    fontSize: 16,
   }
 
   // TO-DO: fix date range: either disable keyboard input or make it work normally
@@ -88,7 +89,7 @@ export default function SearchBox (props) {
       />
 
       <Form.Field control={Button} style={buttonCSS}>
-        <Icon name="check circle" color="olive"/>
+        <Icon name="check circle" color="white"/>
         Submit
       </Form.Field>
     </Form>
