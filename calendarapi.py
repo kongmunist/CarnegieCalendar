@@ -10,12 +10,16 @@ from icalendar import *
 import atexit
 import calendarfetch
 from multiprocessing import Process
+import json
+import pymongo
+from flask_cors import CORS
 
 from apscheduler.schedulers.background import BackgroundScheduler
 
 app = Flask(__name__)
 app.config.from_object(__name__)
 app.secret_key = os.urandom(16)
+cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
 DEBUG = False
 FLATPAGES_AUTO_RELOAD = DEBUG
@@ -55,36 +59,13 @@ def dateconvert(str):
 app.jinja_env.globals.update(dateconvert=dateconvert)
 
 def getAllEvents():
-    eventList = []
+    #connect to db
+    client = pymongo.MongoClient('mongodb://127.0.0.1:27017/')
+    db = client["carnegiecalendar"]
+    col = db["events"]
+    eventList = col.find({}, {'_id': False})
 
-    g = open("calendars/current.ics", 'rb')
-    cal = Calendar.from_ical(g.read())
-    cal = cal.walk()[1:]
-    newCal = []
-
-    uniques = set()
-    for t in cal:
-        # print(t.get("SUMMARY"), str(t.get("DTSTART").dt))
-        try:
-            if t.get("SUMMARY")+str(t.get("DTSTART").dt) not in uniques:
-                uniques.add(t.get("SUMMARY")+str(t.get("DTSTART").dt))
-                newCal.append(t)
-        except:
-            print("default page unique filter fail")
-    # print(uniques)
-        # Generate an eventList for the main.html template to fill in
-    eventList = [
-        {
-            "summary": thing.get('SUMMARY'), 
-            "description": remove_tags(thing.get('DESCRIPTION')),
-            "location": thing.get('LOCATION'),
-            "start_time": time.mktime(thing.get('DTSTART').dt.timetuple()), 
-            "end_time": time.mktime(thing.get('DTEND').dt.timetuple()), 
-            "url": thing.get('URL')
-        } 
-        for thing in newCal if len(thing.get("DESCRIPTION").strip()) >= 1] # This requirement kicks out a lot of events, but they're events that need to be kicked out
-
-        # Sort eventList by date so it displays properly
+    # Sort eventList by date so it displays properly
     try:
         curTime = time.mktime(time.localtime())
         eventList = [x for x in sorted(eventList, key=lambda event:event["start_time"]) if x["start_time"] > curTime]
@@ -135,50 +116,61 @@ def filter_by_end_time(eventList, end):
     res = [x for x in eventList if x ["end_time"] <= end]
     return res
 
-def filter_by_pagination(eventList, page_num, page_capacity):
-    try:
-        page_num = int(page_num)
-        page_capacity = int(page_capacity)
-    except:
-        print("Invalid type")
-        return eventList
-    if (page_capacity <= 0 or page_num <= 0): return eventList
+def intersection (a, b):
+    return set([x for x in b if x in a])
+
+def filter_by_tags(eventList, tags):
     res = []
-    i = (page_num - 1)*page_capacity
-    while (i < len(eventList) and i < page_num*page_capacity):
-        res.append(eventList[i])
-        i += 1
+    for x in eventList:
+        n = len(intersection(tags, x["tags"]))
+        if (n == 0): continue
+        x["compval"] = n
+        res.append(x)
+    try:
+        res.sort(key=lambda event: event["compval"], reverse=True) #sort is stable
+    except Exception as e:
+        print(e)
+        print("sort by compval failed")
+    for event in res:
+        event.pop("compval", None)
     return res
 
 @app.route("/", methods=['GET'])
 def index():
     return jsonify(getAllEvents())
 
+@app.route("/tags", methods=['GET'])
+def getTags():
+    return jsonify(calendarfetch.getAllTags(calendarfetch.data))
 
+#result is sorted based on tags, search string and then date
+#if all three filters are applied
 @app.route("/search", methods=['GET'])
 def search():
     search_str = request.args.get('search_str')
     start_time = request.args.get('start_time')
     end_time = request.args.get('end_time')
-    page_num = request.args.get('page_num')
-    page_capacity = request.args.get('page_capacity')
+    tags = []
+    try: tags = json.loads(request.args.get('tags'))
+    except Exception as e: print(e)
     events = getAllEvents()
-    empty = []
     if (search_str != ""): 
         events = filter_by_search_str(events, search_str)
     if (start_time != ""): 
         events = filter_by_start_time(events, start_time)
     if (end_time != ""): 
         events = filter_by_end_time(events, end_time)
-    if (page_num != "") and (page_capacity != ""): 
-        events = filter_by_pagination(events, page_num, page_capacity)
+    if (type(tags) == list):
+        events = filter_by_tags(events, tags)
     return jsonify(events)
     
 ###### FETCH DATA ######
+if __name__ == "__main__":
+    app.run(port=5050)
 
 def newDataAsync():
     pro = Process(
-        target=calendarfetch.fetchCurrentCalendar,
+        target=calendarfetch.fetchToDB,
         daemon=True
     )
     pro.start()
@@ -189,5 +181,3 @@ scheduler.start()
 
 atexit.register(lambda: scheduler.shutdown())
 
-if __name__ == "__main__":
-    app.run(port=5050)

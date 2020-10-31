@@ -5,8 +5,9 @@ import requests as r
 import time
 import re
 import os
+import json
 from threading import Thread,Lock
-
+import pymongo
 #lock/mutex for combineEvents
 lock = Lock()
 
@@ -77,7 +78,8 @@ clubs = ["https://calendar.google.com/calendar/ical/andrew.cmu.edu_qlki4fofh1c88
 
 labs = ["https://calendar.google.com/calendar/ical/cmuips%40andrew.cmu.edu/public/basic.ics",
 "https://calendar.google.com/calendar/ical/leonard.gelfand.center@gmail.com/public/basic.ics",
-"https://calendar.google.com/calendar/ical/cmu.icc%40gmail.com/public/basic.ics",
+#ICC Calendar, replaced below #"https://calendar.google.com/calendar/ical/cmu.icc%40gmail.com/public/basic.ics",
+"https://tockify.com/api/feeds/ics/student.success",
 #No documentation, so I don't know what to do"https://calendar.google.com/calendar/ical/bm3mt8r4784bi563b1jg4tgijo@group.calendar.google.com/public/basic.ics",
 "https://calendar.google.com/calendar/ical/86cvp8rs4pbcnfvc8t4v7ku05o@group.calendar.google.com/public/basic.ics",
 "https://calendar.google.com/calendar/ical/ehilrdcr39kf3p7lrtnck0vvs8@group.calendar.google.com/public/basic.ics",
@@ -89,6 +91,8 @@ labs = ["https://calendar.google.com/calendar/ical/cmuips%40andrew.cmu.edu/publi
 "https://calendar.google.com/calendar/ical/cmu.etc.pgh.events%40gmail.com/public/basic.ics",
 "https://calendar.google.com/calendar/ical/o67cde9racfa9ss5vcvafvokss%40group.calendar.google.com/public/basic.ics"]
 
+data = {}
+with open('sources.json') as f: data = json.load(f)
 
 # Create Timezone object
 EST = pytz.timezone('America/New_York')
@@ -134,7 +138,6 @@ def eventmineURL(url):
                     item['DTEND'] = prop.vDatetime(item['DTEND'].dt.astimezone(EST))
                 except:
                     pass
-
             eventsList.append(item)
     return eventsList
 
@@ -168,7 +171,6 @@ def filterByDate(eventList,mindate):
     datenow = datetimenow.date()
     filtered = []
     for event in eventList:
-
         try:
             if event.get('dtstart').dt > datetimenow:
                 filtered.append(event)
@@ -203,10 +205,6 @@ def goog(strList):
 def face(str):
     return "https://www.facebook.com/events/ical/export/?eid=" + str[str.find("events/") + 7:-1]
 
-
-
-
-
 def fetchCurrentCalendar():
     eventList,[err1] = combineEvents(sites)
     forbiddenList,[err2] = combineEvents(forbidden)
@@ -227,16 +225,129 @@ def fetchCurrentCalendar():
     
     print("saving")
     saveICS("current",combine(current))
-fetchCurrentCalendar()
+
+# fetchCurrentCalendar()
 # manualList,err5 = combineEvents(extras)
 # saveICS("current",combine(filterByDate(manualList,datetime.datetime.now())))
 # manualList[0]['DTSTART'].dt.astimezone(pytz.timezone('America/New_York'))
 
 
+####ADDED FUNCTIONS FOR TAGS######
+#converts the a item of type eventTypeRef to the format in the database
+def transform(item, tags):
+    copy_tags = [x for x in tags]
+    obj = {
+        "summary": item.get('SUMMARY'), 
+        "description": remove_tags(item.get('DESCRIPTION')),
+        "location": item.get('LOCATION'),
+        "start_time": time.mktime(item.get('DTSTART').dt.timetuple()), 
+        "end_time": time.mktime(item.get('DTEND').dt.timetuple()), 
+        "url": item.get('URL'),
+        "tags": copy_tags
+    }
+    return obj
 
+#mines the events in a given url and assigns them tags
+def eventMineUrlTags(url, tags):
+    eventsList = []
+    cal = Calendar.from_ical(r.get(url).text)
+    for item in cal.walk():
+        if type(item) == eventTypeRef:
+            if type(item['DTSTART'].dt) == datetime.datetime:
+                try:
+                    item['DTSTART'] = prop.vDatetime(item['DTSTART'].dt.astimezone(EST))
+                    item['DTEND'] = prop.vDatetime(item['DTEND'].dt.astimezone(EST))
+                except:
+                    pass
+            eventsList.append(item)
+    eventsList = filterByDate(eventsList, datetime.datetime.now())
+    res = [transform(x, tags) for x in eventsList]
+    return res
 
+#copied original scrape function except for a single url
+def scrape(url, tags):
+    try:
+        print(url)
+        a = eventMineUrlTags(url, tags)
+        return a, 1
+    except Exception as e:
+        print(str(e))
+        print("combine failed on " + url)
+        return [], 0
 
+#traverses the json and scrapes each calendar
+#returns a list of parsed events
+def fetchEvents(par, tags):
+    res = []
+    numsuccess = 0
+    for key in par:
+        tags.append(key)
+        if (isinstance(par[key], str)): 
+            temp, succ = scrape(par[key], tags)
+            res += temp
+            numsuccess += succ
+        elif (isinstance(par[key], list)):
+            for each in par[key]:
+                temp, succ = scrape(each, tags)
+                res += temp
+                numsuccess += succ
+        else: 
+            temp, succ = fetchEvents(par[key], tags)
+            res += temp
+            numsuccess += succ
+        tags.pop(-1)
+    return res, numsuccess
 
+#filter out the events with very short descriptions or possible duplicates
+def filterEvents(eventList):
+    temp = [x for x in eventList if len(x["description"].strip()) >= 1]
+    uniques = set()
+    res = []
+    for each in temp:
+        if each["description"]+str(each["start_time"]) not in uniques:
+            uniques.add(each["description"]+str(each["start_time"]))
+            res.append(each)
+    return res
+
+#returns the number of urls
+def treeLeafCnt(par):
+    res = 0
+    for key in par:
+        if (isinstance(par[key], str)): res += 1
+        elif (isinstance(par[key], list)): res += len(par[key])
+        else: res += treeLeafCnt(par[key])
+    return res
+
+def getAllTags(par):
+    res = []
+    for key in par:
+        res += [key]
+        if (isinstance(par[key], dict)): res += getAllTags(par[key])
+    return res
+
+def fetchToDB():
+    s = []
+    output, succ = fetchEvents(data, s)
+    output = filterEvents(output)
+
+    numcals = treeLeafCnt(data)
+    print("number of calendars parsed: ", numcals)
+    print("success rate: ", 100*succ/numcals)
+
+    #connect to db
+    client = pymongo.MongoClient('mongodb://127.0.0.1:27017/')
+    db = client["carnegiecalendar"]
+    col = db["events"]
+
+    #delete all existing events
+    cnt = col.delete_many({})
+    print(cnt.deleted_count, " documents deleted")
+
+    #insert new events
+    col.insert_many(output)
+    
+
+# fetchToDB()
 
 
 
