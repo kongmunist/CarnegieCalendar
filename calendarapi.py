@@ -13,11 +13,9 @@ from multiprocessing import Process
 import json
 import pymongo
 from flask_cors import CORS
+import settings
 
 from apscheduler.schedulers.background import BackgroundScheduler
-from dotenv import load_dotenv
-
-load_dotenv()
 
 app = Flask(__name__)
 app.config.from_object(__name__)
@@ -63,7 +61,7 @@ app.jinja_env.globals.update(dateconvert=dateconvert)
 
 def getAllEvents():
     #connect to db
-    client = pymongo.MongoClient(os.getenv("MONGODB_ADDRESS"))
+    client = pymongo.MongoClient(settings.DB_HOST)
     db = client["carnegiecalendar"]
     col = db["events"]
     eventList = col.find({}, {'_id': False})
@@ -169,7 +167,7 @@ def search():
     
 ###### FETCH DATA ######
 if __name__ == "__main__":
-    app.run(port=os.getenv("PORT"))
+    app.run(port=5050)
 
 def newDataAsync():
     pro = Process(

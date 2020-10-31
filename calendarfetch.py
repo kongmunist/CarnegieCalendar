@@ -8,6 +8,7 @@ import os
 import json
 from threading import Thread,Lock
 import pymongo
+import settings
 #lock/mutex for combineEvents
 lock = Lock()
 
@@ -335,7 +336,7 @@ def fetchToDB():
     print("success rate: ", 100*succ/numcals)
 
     #connect to db
-    client = pymongo.MongoClient('mongodb://127.0.0.1:27017/')
+    client = pymongo.MongoClient(settings.DB_HOST)
     db = client["carnegiecalendar"]
     col = db["events"]
 
