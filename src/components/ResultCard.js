@@ -5,7 +5,7 @@ export default function ResultCard (props) {
   // This is just boilerplate
   // TODO: Add functional card component
   return (
-    <Card fluid>
+    <Card fluid style={{marginBottom: 50}}>
       <Card.Content>
         <Card.Header>Generic card title</Card.Header>
         <Card.Meta>
