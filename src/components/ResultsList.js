@@ -1,22 +1,14 @@
 import React from 'react'
 import ResultCard from './ResultCard'
-import { Grid } from 'semantic-ui-react'
+import { Card } from 'semantic-ui-react'
 
 export default function ResultsList (props) {
   const getEventID = event => event.description
   return (
-    <Grid stackable columns={1}>
+    <Card.Group itemsPerRow={4} stackable={true}>
       {props.events.map(event => (
-        <Grid.Column id={getEventID(event)}>
-          <ResultCard event={event} />
-        </Grid.Column>
+        <ResultCard event={event} key={getEventID(event)} />
       ))}
-
-      {/* for testing purpose */}
-      <Grid.Column>
-          <ResultCard/>
-          <ResultCard/>
-      </Grid.Column>
-    </Grid>
+    </Card.Group>
   )
 }

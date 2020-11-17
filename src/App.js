@@ -24,7 +24,8 @@ function App() {
     height: 100,
     width: '100%',
     bottom: 0,
-    verticalAlign: 'middle'
+    verticalAlign: 'middle',
+    zIndex: 100
   }
 
   let eventStyle = {
