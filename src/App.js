@@ -9,6 +9,7 @@ import Footer from './components/Footer'
 
 function App() {
   const [events, setEvents] = useState([])
+  const [isLoading, setIsLoading] = useState(false)
 
   let navStyle = {
     backgroundColor: '#77212E',
@@ -47,11 +48,11 @@ function App() {
           </Grid.Row>
 
           <Grid.Row>
-            <SearchBox setContent={setEvents} />
+            <SearchBox setEvents={setEvents} setIsLoading={setIsLoading}/>
           </Grid.Row>
 
           <Grid.Row style={{paddingTop:50}}>
-            <ResultsList events={events} />
+            {isLoading ? <p>Loading...</p> : <ResultsList events={events} />}
           </Grid.Row>
         </Grid>
       </Container>

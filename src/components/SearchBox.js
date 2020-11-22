@@ -9,6 +9,9 @@ export default function SearchBox (props) {
   const [datesRange, setDatesRange] = useState('');
 
   const handleSubmit = () => {
+    props.setIsLoading(true)
+    console.log('is loading')
+
     console.log(searchQuery, datesRange) // for testing purpose
     let dates = datesRange.split(" - ")
     let start = Date.parse(dates[0])
@@ -16,12 +19,23 @@ export default function SearchBox (props) {
     console.log(start, end) // for testing purpose
 
     // TO-DO: pass searchQuery, start and end to API
+    if (isNaN(start)) {
+      start = ""
+    }
+    if (isNaN(end)) {
+      end = ""
+    }
+
     let api_url = `http://127.0.0.1:5050/search?search_str=${searchQuery}&start_time=${start}&end_time=${end}`;
     // TO-DO: once API is hosted, change API call, add other parameters
     // TO-DO: remind other people working on frontend to take in content as props
     fetch(api_url)
       .then(response => response.json())
-      .then(data => props.setContent(data));
+      .then(data => {
+        props.setEvents(data)
+        props.setIsLoading(false)
+      });
+    console.log(api_url)
   }
 
   const handleQueryChange = (_, value) => {
