@@ -83,6 +83,7 @@ def shallow_copy(obj):
 def filter_by_search_str (eventList, search_str):
     res = []
     terms = [x.strip().lower() for x in search_str.split(" ")]
+    print(terms)
     for event in eventList:
         matchval = 0
         for term in terms:
@@ -121,6 +122,7 @@ def intersection (a, b):
     return set([x for x in b if x in a])
 
 def filter_by_tags(eventList, tags):
+    if (len(tags) == 0): return eventList
     res = []
     for x in eventList:
         n = len(intersection(tags, x["tags"]))
@@ -155,11 +157,11 @@ def search():
     try: tags = json.loads(request.args.get('tags'))
     except Exception as e: print(e)
     events = getAllEvents()
-    if (search_str != ""): 
+    if (search_str != "" and search_str is not None): 
         events = filter_by_search_str(events, search_str)
-    if (start_time != ""): 
+    if (start_time != "" and start_time is not None): 
         events = filter_by_start_time(events, start_time)
-    if (end_time != ""): 
+    if (end_time != "" and end_time is not None): 
         events = filter_by_end_time(events, end_time)
     if (type(tags) == list):
         events = filter_by_tags(events, tags)
