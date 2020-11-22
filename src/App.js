@@ -51,6 +51,7 @@ function App() {
             <SearchBox setEvents={setEvents} setIsLoading={setIsLoading}/>
           </Grid.Row>
 
+          {/* TO-DO: change loading component */}
           <Grid.Row style={{paddingTop:50}}>
             {isLoading ? <p>Loading...</p> : <ResultsList events={events} />}
           </Grid.Row>

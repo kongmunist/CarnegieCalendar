@@ -10,15 +10,13 @@ export default function SearchBox (props) {
 
   const handleSubmit = () => {
     props.setIsLoading(true)
-    console.log('is loading')
 
     console.log(searchQuery, datesRange) // for testing purpose
     let dates = datesRange.split(" - ")
-    let start = Date.parse(dates[0])
-    let end = Date.parse(dates[1])
+    let start = Date.parse(dates[0])/1000
+    let end = Date.parse(dates[1])/1000
     console.log(start, end) // for testing purpose
 
-    // TO-DO: pass searchQuery, start and end to API
     if (isNaN(start)) {
       start = ""
     }
@@ -35,7 +33,7 @@ export default function SearchBox (props) {
         props.setEvents(data)
         props.setIsLoading(false)
       });
-    console.log(api_url)
+    console.log(api_url) // for testing purpose
   }
 
   const handleQueryChange = (_, value) => {
