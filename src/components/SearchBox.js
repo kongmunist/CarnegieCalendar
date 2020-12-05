@@ -2,9 +2,7 @@ import React, { useState } from 'react';
 import { Form, Input, Button, Icon } from 'semantic-ui-react'
 import { DatesRangeInput } from 'semantic-ui-calendar-react';
 
-const API_PORT = process.env["REACT_APP_SERVER_PORT"];
-const API_HOST = process.env["REACT_APP_HOST"];
-const API_URL = API_HOST + ":" + API_PORT;
+const API_URL = process.env["REACT_APP_API_HOST"];
 
 export default function SearchBox (props) {
 
