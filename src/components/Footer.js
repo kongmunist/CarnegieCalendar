@@ -12,7 +12,7 @@ export default function HeaderRegion () {
   
   return (
     <Container text style={footerCSS}>
-      Developed by: Scotty Labs
+      Developed by: ScottyLabs
     </Container>
   )
 }

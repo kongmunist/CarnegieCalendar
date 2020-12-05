@@ -169,7 +169,7 @@ def search():
     
 ###### FETCH DATA ######
 if __name__ == "__main__":
-    app.run(port=5050)
+    app.run(port=settings.PORT)
 
 def newDataAsync():
     pro = Process(

@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { Form, Input, Button, Icon } from 'semantic-ui-react'
 import { DatesRangeInput } from 'semantic-ui-calendar-react';
 
+const API_PORT = process.env["REACT_APP_SERVER_PORT"];
+const API_HOST = process.env["REACT_APP_HOST"];
+const API_URL = API_HOST + ":" + API_PORT;
 
 export default function SearchBox (props) {
 
@@ -24,7 +27,7 @@ export default function SearchBox (props) {
       end = ""
     }
 
-    let api_url = `http://127.0.0.1:5050/search?search_str=${searchQuery}&start_time=${start}&end_time=${end}`;
+    let api_url = `${API_URL}/search?search_str=${searchQuery}&start_time=${start}&end_time=${end}`;
     // TO-DO: once API is hosted, change API call, add other parameters
     // TO-DO: remind other people working on frontend to take in content as props
     fetch(api_url)
