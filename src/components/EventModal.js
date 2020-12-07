@@ -7,8 +7,9 @@ export default function EventModal (props) {
 
   return (
     <Modal
+      closeIcon
       open={props.open}
-      dimmer='inverted'
+      style={{width: '80%', height: '50%', overflow: 'scroll'}}
     >
       <Modal.Header>Event Details</Modal.Header>
       <Modal.Content>
