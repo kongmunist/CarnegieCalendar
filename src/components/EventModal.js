@@ -8,11 +8,12 @@ export default function EventModal (props) {
   return (
     <Modal
       closeIcon
+      dimmer='inverted'
       open={props.open}
-      style={{width: '80%', height: '50%', overflow: 'scroll'}}
+      style={{width: '80%', height: '80%', overflow: 'scroll', textOverflow: 'ellipsis', background: 'snow'}}
     >
-      <Modal.Header>Event Details</Modal.Header>
-      <Modal.Content>
+      <Modal.Header style={{background:'#77212E', color:'snow'}}>Event Details</Modal.Header>
+      <Modal.Content style={{background:'snow'}}>
         <Modal.Description>
           <Segment>
             <Header>{summary}</Header>

@@ -29,11 +29,6 @@ function App() {
     zIndex: 100
   }
 
-  let resultStyle = {
-    backgroundColor: 'red',
-    width: '50%'
-  }
-
   return (
     <div className="App" style={{positive:"relative", minHeight:"100vh"}}>
       <Grid.Row style={navStyle}>
