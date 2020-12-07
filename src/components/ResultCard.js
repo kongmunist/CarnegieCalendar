@@ -26,7 +26,6 @@ export default function ResultCard (props) {
   const linkStyle = { 'overflow': 'hidden', 'whiteSpace': 'nowrap' }
 
   const cardClick = e => {
-    console.log(e.target)
     if (!e.target.classList.contains('event-href')) {
       e.preventDefault()
       setModalVisible(!modalVisible)
