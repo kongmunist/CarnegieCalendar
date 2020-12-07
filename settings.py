@@ -4,4 +4,4 @@ import os
 load_dotenv()
 
 DB_HOST = os.getenv('MONGO_HOST')
-PORT = os.getenv("REACT_APP_SERVER_PORT")
+PORT = os.getenv("SERVER_PORT")

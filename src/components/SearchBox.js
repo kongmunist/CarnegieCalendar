@@ -2,9 +2,7 @@ import React, { useState } from 'react';
 import { Form, Input, Button, Icon } from 'semantic-ui-react'
 import { DatesRangeInput } from 'semantic-ui-calendar-react';
 
-const API_PORT = process.env["REACT_APP_SERVER_PORT"];
-const API_HOST = process.env["REACT_APP_HOST"];
-const API_URL = API_HOST + ":" + API_PORT;
+const API_URL = process.env["REACT_APP_API_HOST"];
 
 export default function SearchBox (props) {
 
@@ -14,11 +12,9 @@ export default function SearchBox (props) {
   const handleSubmit = () => {
     props.setIsLoading(true)
 
-    console.log(searchQuery, datesRange) // for testing purpose
     let dates = datesRange.split(" - ")
     let start = Date.parse(dates[0])/1000
     let end = Date.parse(dates[1])/1000
-    console.log(start, end) // for testing purpose
 
     if (isNaN(start)) {
       start = ""
@@ -28,15 +24,12 @@ export default function SearchBox (props) {
     }
 
     let api_url = `${API_URL}/search?search_str=${searchQuery}&start_time=${start}&end_time=${end}`;
-    // TO-DO: once API is hosted, change API call, add other parameters
-    // TO-DO: remind other people working on frontend to take in content as props
     fetch(api_url)
       .then(response => response.json())
       .then(data => {
         props.setEvents(data)
         props.setIsLoading(false)
       });
-    console.log(api_url) // for testing purpose
   }
 
   const handleQueryChange = (_, value) => {

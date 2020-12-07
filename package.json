@@ -15,7 +15,8 @@
     "semantic-ui-react": "^2.0.0"
   },
   "scripts": {
-    "start": "craco start",
+    "server": "python3 calendarapi.py",
+    "client": "craco start",
     "build": "craco build",
     "test": "craco test",
     "eject": "craco eject"
