@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { Form, Input, Button, Icon } from 'semantic-ui-react'
 import { DatesRangeInput } from 'semantic-ui-calendar-react';
 
-const API_URL = process.env["REACT_APP_API_HOST"];
+// const API_URL = process.env["REACT_APP_API_HOST"];
+const API_URL = "https://apis.scottylabs.org/calendar"
 
 export default function SearchBox (props) {
 
@@ -24,7 +25,7 @@ export default function SearchBox (props) {
     }
 
     let api_url = `${API_URL}/search?search_str=${searchQuery}&start_time=${start}&end_time=${end}`;
-    
+    console.log(api_url)
     fetch(api_url)
       .then(response => response.json())
       .then(data => {

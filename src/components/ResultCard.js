@@ -21,7 +21,7 @@ export default function ResultCard (props) {
 
   const dateRange = `${startDay} ${startTime} - ${startDay === endDay ? '' : endDay + ' '}${endTime}`
 
-  const maxDescLength = 200
+  const maxDescLength = 100
   const descStyle = { 'overflow': 'hidden', 'wordBreak': 'break-word', 'textOverflow': 'ellipsis'}
   const linkStyle = { 'overflow': 'hidden', 'whiteSpace': 'nowrap', 'textOverflow': 'ellipsis', 'paddingTop': 5}
 
@@ -33,7 +33,7 @@ export default function ResultCard (props) {
   }
 
   return (
-    <Card style={{marginBottom: 50, backgroundColor: 'snow', height: 240, padding: 10}} href='#' onClick={cardClick}>
+    <Card style={{marginBottom: 50, backgroundColor: 'snow', height: 240, padding: 10, minWidth: 240}} href='#' onClick={cardClick}>
       <EventModal description={description}
                   summary={summary}
                   dateRange={dateRange}
@@ -46,7 +46,7 @@ export default function ResultCard (props) {
           <div className='date' style={{paddingTop:5}}>
             <Icon name="clock"/>{dateRange}
           </div>
-          {location && <div className='location' style={{paddingTop:5}}>
+          {location && <div className='location' style={{paddingTop:5, overflow:'hidden', textOverflow:'ellipsis'}}>
             <Icon name="map marker"/>{location}
           </div>}
           {url && <div className='link' style={linkStyle}>

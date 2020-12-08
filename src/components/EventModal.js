@@ -3,11 +3,12 @@ import { Button, Card, Header, Icon, Modal, Segment } from 'semantic-ui-react'
 
 export default function EventModal (props) {
   const { description, summary, location, url, dateRange } = props
-  const descStyle = { wordWrap: 'break-word', whiteSpace: 'pre-wrap' }
-
+  const descStyle = { overflowWrap: 'break-word', wordBreak: 'break-all', whiteSpace: 'pre-wrap' }
+  const textStyle = { overflowWrap: 'break-word', wordBreak: 'break-all', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }
   return (
     <Modal
       closeIcon
+      closeOnDimmerClick={true}
       dimmer='inverted'
       open={props.open}
       style={{width: '80%', height: '80%', overflow: 'scroll', textOverflow: 'ellipsis', background: 'snow'}}
@@ -21,7 +22,7 @@ export default function EventModal (props) {
             {location && <div className='location'><Icon name="map marker"/>{location}</div>}
             {url && <div className='link'>
               <Icon name="paperclip"/>
-              <a href={url} rel='noopener noreferrer' target='_blank'>{url}</a>
+              <a className='event-href' href={url} rel='noopener noreferrer' target='_blank'>Open Link</a>
             </div>}
           </Segment>
           <p style={descStyle}>
