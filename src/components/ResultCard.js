@@ -65,18 +65,23 @@ export default function ResultCard (props) {
                   location={location}
                   open={modalVisible} />
       <Card.Content>
-        <Card.Header style={headStyle}>{summary}</Card.Header>
+        <Card.Header style={headStyle}>
+          {summary}
+        </Card.Header>
         <Card.Meta>
           <div className='date' style={linkStyle}>
             <Icon name="clock"/>{dateRange}
           </div>
           {location && <div className='location' style={linkStyle}>
             <Icon name="map marker"/>{location}
-          </div>}
+          </div> }
           {url && <div className='link' style={linkStyle}>
             <Icon name="paperclip"/>
-            <a href={url} rel='noopener noreferrer' target='_blank' className='event-href'>{url}</a>
-          </div>}
+            <a href={url} rel='noopener noreferrer' target='_blank' 
+             className='event-href'>
+               {url}
+            </a>
+          </div> }
         </Card.Meta>
         <Card.Description style={descStyle}>
           {description}
