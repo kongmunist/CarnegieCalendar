@@ -3,6 +3,7 @@ import { Form, Input, Button, Icon } from 'semantic-ui-react'
 import { DatesRangeInput } from 'semantic-ui-calendar-react';
 
 // const API_URL = process.env["REACT_APP_API_HOST"];
+// REMEMBER TO CHANGE IT BACK
 const API_URL = "https://apis.scottylabs.org/calendar"
 
 export default function SearchBox (props) {

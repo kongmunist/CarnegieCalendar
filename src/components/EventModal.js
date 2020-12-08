@@ -4,7 +4,6 @@ import { Button, Card, Header, Icon, Modal, Segment } from 'semantic-ui-react'
 export default function EventModal (props) {
   const { description, summary, location, url, dateRange } = props
   const descStyle = { overflowWrap: 'break-word', wordBreak: 'break-all', whiteSpace: 'pre-wrap' }
-  const textStyle = { overflowWrap: 'break-word', wordBreak: 'break-all', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }
   return (
     <Modal
       closeIcon
